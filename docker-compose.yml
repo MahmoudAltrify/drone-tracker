@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+        container_name: drone-app
+        volumes:
+            - .:/var/www/html
+        ports:
+            - "8000:8000"
+        depends_on:
+            - mysql
+        networks:
+            - drone-network
+
+    mysql:
+        image: mysql:8.0
+        container_name: drone-db
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: drone
+            MYSQL_USER: drone
+            MYSQL_PASSWORD: drone
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - drone-network
+
+    mqtt:
+        image: eclipse-mosquitto
+        container_name: drone-mqtt
+        ports:
+            - "1883:1883"
+        volumes:
+            - ./mosquitto/config:/mosquitto/config
+        networks:
+            - drone-network
+
+volumes:
+    db_data:
+
+networks:
+    drone-network:
