@@ -1,0 +1,31 @@
+<?php
+
+use App\Models\Drone;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('dangerous_drones', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Drone::class)->constrained()->onDelete('cascade');
+            $table->enum('reason', ['altitude', 'speed']);
+            $table->timestamp('detected_at');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('dangerous_drones');
+    }
+};
