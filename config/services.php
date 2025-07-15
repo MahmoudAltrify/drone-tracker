@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'mqtt' => [
+        'connection' => env('MESSAGE_QUEUING_CONNECTION'),
+        'port' => env('MESSAGE_QUEUING_PORT')
+    ]
 
 ];

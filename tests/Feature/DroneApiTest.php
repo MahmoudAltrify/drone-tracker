@@ -138,6 +138,7 @@ class DroneApiTest extends TestCase
                 [35.8311, 31.9786],
             ]]);
     }
+    #[Test]
     public function test_it_returns_all_dangerous_drones()
     {
         Drone::factory()->create(['serial' => 'SAFE-DRONE']);

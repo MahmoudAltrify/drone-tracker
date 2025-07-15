@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Drone extends Model
 {
     use HasFactory;
+    protected $guarded = ['id'];
+    protected $casts = [
+        'is_online' => 'boolean',
+    ];
     public function telemetries(): HasMany
     {
         return $this->hasMany(DroneTelemetry::class);
