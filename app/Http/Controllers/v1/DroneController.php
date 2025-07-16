@@ -14,9 +14,34 @@ use Illuminate\Support\Facades\Log;
 class DroneController extends ApiBaseController
 {
     /**
-     * Get all drones or filter by serial
-     * @param Request $request
-     * @return JsonResponse
+     * @OA\Get(
+     *     path="/v1/drones",
+     *     tags={"Drones"},
+     *     summary="List all drones or filter by serial",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="serial",
+     *         in="query",
+     *         description="Filter by partial or full serial number",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of drones",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="code", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/DroneResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function index(Request $request)
     {
@@ -32,8 +57,27 @@ class DroneController extends ApiBaseController
     }
 
     /**
-     * Get online drones only
-     * @return JsonResponse
+     * @OA\Get(
+     *     path="/v1/drones/online",
+     *     tags={"Drones"},
+     *     summary="Get online drones",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Online drones list",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="code", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/DroneResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function getOnlineDrones(){
         $onlineDrones = Drone::query()->with('danger')
@@ -44,9 +88,42 @@ class DroneController extends ApiBaseController
     }
 
     /**
-     * Get nearby drones
-     * @param NearbyDroneRequest $request
-     * @return JsonResponse
+     * @OA\Get(
+     *     path="/v1/drones/nearby",
+     *     tags={"Drones"},
+     *     summary="Get drones near a point (5km radius)",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="lat",
+     *         in="query",
+     *         required=true,
+     *         description="Latitude of the point",
+     *         @OA\Schema(type="number", format="float")
+     *     ),
+     *     @OA\Parameter(
+     *         name="lng",
+     *         in="query",
+     *         required=true,
+     *         description="Longitude of the point",
+     *         @OA\Schema(type="number", format="float")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Nearby drones",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="code", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/DroneResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function getNearbyDrones(NearbyDroneRequest $request)
     {
@@ -67,9 +144,43 @@ class DroneController extends ApiBaseController
     }
 
     /**
-     * Get drone path
-     * @param string $serial
-     * @return JsonResponse
+     * @OA\Get(
+     *     path="/v1/drones/{serial}/path",
+     *     tags={"Drones"},
+     *     summary="Get drone flight path as GeoJSON",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="serial",
+     *         in="path",
+     *         required=true,
+     *         description="Drone serial number",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="GeoJSON LineString path",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="code", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="type", type="string", example="LineString"),
+     *                 @OA\Property(
+     *                     property="coordinates",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="array",
+     *                         @OA\Items(type="number", format="float", example=39.5)
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Drone not found"),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function getDronePathBySerial(string $serial)
     {
@@ -90,8 +201,27 @@ class DroneController extends ApiBaseController
     }
 
     /**
-     * get dangerous drones
-     * @return JsonResponse
+     * @OA\Get(
+     *     path="/v1/drones/dangerous",
+     *     tags={"Drones"},
+     *     summary="Get dangerous drones",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dangerous drones list",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="code", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/DroneResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function getDangerousDrones()
     {
