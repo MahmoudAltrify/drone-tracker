@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Models\DangerousDrone;
 use App\Models\Drone;
 use App\Models\DroneTelemetry;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -17,6 +19,7 @@ class DroneApiTest extends TestCase
     #[Test]
     public function test_it_returns_all_drones()
     {
+        Sanctum::actingAs(User::factory()->create());
         Drone::factory()->count(5)->create();
 
         $response = $this->getJson('/api/v1/drones');
@@ -47,6 +50,8 @@ class DroneApiTest extends TestCase
     #[Test]
     public function test_it_filters_drones_by_partial_serial()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         Drone::factory()->create(['serial' => 'ALPHA-12345']);
         Drone::factory()->create(['serial' => 'BETA-99999']);
 
@@ -59,6 +64,8 @@ class DroneApiTest extends TestCase
     #[Test]
     public function test_it_returns_online_drones_only()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         Drone::factory()->create(['serial' => 'ONLINE-1', 'is_online' => true]);
         Drone::factory()->create(['serial' => 'OFFLINE-1', 'is_online' => false]);
 
@@ -79,6 +86,8 @@ class DroneApiTest extends TestCase
     #[Test]
     public function test_it_returns_drones_within_5km()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         $droneNear = Drone::factory()->create(['serial' => 'NEAR-1']);
         DroneTelemetry::query()->create([
             'drone_id' => $droneNear->id,
@@ -108,6 +117,8 @@ class DroneApiTest extends TestCase
     #[Test]
     public function test_it_returns_flight_path_as_geojson()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         $drone = Drone::factory()->create(['serial' => 'FLIGHT-001']);
 
         DroneTelemetry::query()->create([
@@ -141,6 +152,8 @@ class DroneApiTest extends TestCase
     #[Test]
     public function test_it_returns_all_dangerous_drones()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         Drone::factory()->create(['serial' => 'SAFE-DRONE']);
         $dangerousDrone = Drone::factory()->create(['serial' => 'DANGER-DRONE']);
 
