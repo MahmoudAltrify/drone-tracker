@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\DangerousDrone;
 use App\Models\Drone;
 use App\Strategies\AltitudeDangerStrategy;
+use App\Strategies\GeofenceDangerStrategy;
 use App\Strategies\SpeedDangerStrategy;
 use Illuminate\Support\Carbon;
 
@@ -17,6 +18,7 @@ class TelemetryProcessorService
         $this->strategies = [
             new AltitudeDangerStrategy(),
             new SpeedDangerStrategy(),
+            new GeofenceDangerStrategy()
         ];
     }
 
